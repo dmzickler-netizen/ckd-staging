@@ -1214,7 +1214,7 @@ function generateTexts(age, sex, scr, cys, uacr, bpSys, extraInfo,
   if (gfrStage) {
     const stage = gfrStage.stage;
 
-    recList.push('Blutdruckziel: < 120–130/70–80 mmHg (Plan 2/KDIGO 2024); RAAS-Blockade bevorzugen');
+    recList.push('Blutdruckziel: < 120–130/70–80 mmHg (KDIGO 2024); RAAS-Blockade bevorzugen');
 
     if (uacr && uacr >= 30) {
       recList.push('RAS-Blockade: ACE-Hemmer oder AT1-Antagonist in maximal tolerierter Dosis (Ziel-ACR-Reduktion ≥ 30%)');
@@ -1223,10 +1223,10 @@ function generateTexts(age, sex, scr, cys, uacr, bpSys, extraInfo,
     }
 
     if (diseases.includes('diabetisch') || (uacr && uacr >= 30 && primaryEGFR >= 20)) {
-      recList.push('SGLT2-Inhibitor: Dapagliflozin (Forxiga®) 10 mg/d — ab eGFR ≥ 20 ml/min, nephroprotektiv unabhängig von BZ-Wirkung (Plan 2 Seite 115)');
+      recList.push('SGLT2-Inhibitor: Dapagliflozin (Forxiga®) 10 mg/d — ab eGFR ≥ 20 ml/min, nephroprotektiv unabhängig von BZ-Wirkung');
     }
 
-    // Finerenon — K⁺ and eGFR dependent (Plan 2 p.115: K < 5, eGFR > 25, diabetische NP CKD 3-4 + Albuminurie)
+    // Finerenon — K⁺ and eGFR dependent (K⁺ < 5, eGFR > 25, diabetische NP CKD 3-4 + Albuminurie)
     if (diseases.includes('diabetisch') && uacr && uacr >= 30 && primaryEGFR >= 25) {
       if (kalium !== null && kalium >= 5.0) {
         recList.push(`⚠️ Finerenon (Kerendia® 10 mg): Indikation gegeben (diab. NP + Albuminurie + eGFR ≥ 25), aber AKTUELL KONTRAINDIZIERT — Kalium ${kalium} mmol/l ≥ 5,0 mmol/l! Erst Kalium senken, dann re-evaluieren.`);
@@ -1813,7 +1813,7 @@ function printArztbrief() {
   document.getElementById('print-card').style.display = 'none';
 }
 
-// ===== CKD-MBD DOSING PANEL (Plan 2 v18.2/2024) =====
+// ===== CKD-MBD DOSING PANEL =====
 function generateCKDMBDPanel({ weight, dialysisSt, hb, ferritin, tsat, pth, bicarb, phosphat, calcium, vitd, gfrStage }) {
   const panel = document.getElementById('mbd-panel');
   const hasAny = hb || ferritin || tsat || pth || bicarb || phosphat;
@@ -1830,7 +1830,7 @@ function generateCKDMBDPanel({ weight, dialysisSt, hb, ferritin, tsat, pth, bica
 
   let cards = '';
 
-  // ── 1. EISEN (Ferinject) — Plan 2 Seite 119 ──────────────────────────────
+  // ── 1. EISEN (Ferinject) ──────────────────────────────────────────────────
   // Zielwerte: CKD: Ferritin 100-500, TSAT > 20% | Dialyse: Ferritin 200-700, TSAT 30-40%
   // Safety cutoff PIVOTAL: Ferritin < 700 UND TSAT < 40%
   if (ferritin !== null || tsat !== null) {
@@ -1843,13 +1843,13 @@ function generateCKDMBDPanel({ weight, dialysisSt, hb, ferritin, tsat, pth, bica
     const ferOk    = (ferritin === null || (ferritin >= ferMinTarget && ferritin <= ferMaxTarget)) &&
                      (tsat === null || tsat >= tsatMinTarget);
     const ferOver  = (ferritin !== null && ferritin >= 700) || (tsat !== null && tsat >= 40);
-    // IV iron indication: Ferritin < 100(200) OR TSAT < 20% AND Ferritin < 300 (Plan 2 p.119)
+    // IV iron indication: Ferritin < 100(200) OR TSAT < 20% AND Ferritin < 300
     const ivIron   = (ferritin !== null && ferritin < (isDialysis ? 200 : 100)) ||
                      (tsat !== null && tsat < 20 && (ferritin === null || ferritin < 300));
     const ivIronHighDose = (ferritin !== null && ferritin < (isDialysis ? 100 : 80)) ||
                            (tsat !== null && tsat < 15);
 
-    // Iron deficit formula: [Soll-Hb – Ist-Hb] × KG × 2,4 + 500 mg (Plan 2 p.119)
+    // Iron deficit formula: [Soll-Hb – Ist-Hb] × KG × 2,4 + 500 mg
     let eisenDefizit = null;
     let defizitText = '';
     if (weight && hb) {
@@ -1917,12 +1917,12 @@ function generateCKDMBDPanel({ weight, dialysisSt, hb, ferritin, tsat, pth, bica
     </div>`;
   }
 
-  // ── 2. ESA (Darbepoetin/Epoetin) — Plan 2 Seite 120 ─────────────────────
+  // ── 2. ESA (Darbepoetin/Epoetin) ──────────────────────────────────────────
   // Ziel-Hb: 10–11 g/dl | Anämieabklärung bei Hb < 11 g/dl
   // Korrekturschema: >13 Pause | >11 Pause -25% | 10-11 beibehalten | 9-10 +25% | <9 +50% | <8 EK
   if (hb !== null) {
     let epoColor, epoTitle, epoDose, epoDetail, epoCaveat = '';
-    // Iron adequacy check (Plan 2: Iron first!)
+    // Iron adequacy check (Iron first!)
     const ironAdequate = ferritin !== null ? ferritin >= (isDialysis ? 200 : 100) : true;
     const tsatAdequate = tsat !== null ? tsat >= (isDialysis ? 30 : 20) : true;
     const ironOk = ironAdequate && tsatAdequate;
@@ -1941,7 +1941,7 @@ function generateCKDMBDPanel({ weight, dialysisSt, hb, ferritin, tsat, pth, bica
       epoTitle = '⬇️ ESA — Hb zu hoch → Dosis −25%';
       epoDose  = 'ESA-Dosis um 25% reduzieren';
       epoDetail = `Hb ${hb} g/dl — über Ziel (10–11 g/dl).<br>
-        Korrekturschema Plan 2: Hb > 11 → Pause, dann −25%.<br>
+        Korrekturschema: Hb > 11 → Pause, dann −25%.<br>
         • Aktuelle ESA-Dosis um 25% reduzieren<br>
         • Hb-Kontrolle nach 4 Wochen<br>
         • Bei Hb > 13: ESA stoppen`;
@@ -1949,7 +1949,7 @@ function generateCKDMBDPanel({ weight, dialysisSt, hb, ferritin, tsat, pth, bica
       epoColor = 'green';
       epoTitle = '✅ ESA — Ziel-Hb 10–11 g/dl erreicht';
       epoDose  = 'Erhaltungsdosis beibehalten';
-      epoDetail = `Hb ${hb} g/dl — im Zielbereich (10–11 g/dl) lt. Plan 2.<br>
+      epoDetail = `Hb ${hb} g/dl — im Zielbereich (10–11 g/dl).<br>
         Aktuelle Dosis weiterführen. Hb-Kontrolle alle 4 Wochen.`;
     } else if (hb >= 9) {
       // Hb 9-10
@@ -1965,7 +1965,7 @@ function generateCKDMBDPanel({ weight, dialysisSt, hb, ferritin, tsat, pth, bica
         epoTitle = '⬆️ ESA — Dosis +25%';
         epoDose  = 'Aktuelle ESA-Dosis um 25% erhöhen';
         epoDetail = `Hb ${hb} g/dl — unter Ziel (10–11 g/dl).<br>
-          Korrekturschema Plan 2: Hb 9–10 → ESA +25%.<br>
+          Korrekturschema: Hb 9–10 → ESA +25%.<br>
           • Dosis um 25% steigern<br>
           • Hb-Kontrolle nach 4 Wochen<br>
           • Eisenstatus prüfen: Ferritin + TSAT`;
@@ -1984,7 +1984,7 @@ function generateCKDMBDPanel({ weight, dialysisSt, hb, ferritin, tsat, pth, bica
       } else {
         epoColor = 'blue';
         if (!isDialysis) {
-          // Prä-Dialyse: Darbepoetin alfa (Plan 2: 0,75 µg/kg alle 2 Wochen)
+          // Prä-Dialyse: Darbepoetin alfa (0,75 µg/kg alle 2 Wochen)
           let darboDose = '—', darboCalc = '';
           if (weight) {
             const rawDose = Math.round(0.75 * weight * 10) / 10;
@@ -1996,7 +1996,7 @@ function generateCKDMBDPanel({ weight, dialysisSt, hb, ferritin, tsat, pth, bica
           epoTitle = '⬆️ Darbepoetin alfa — Startdosis / +50%';
           epoDose  = weight ? `Aranesp® ${darboDose} s.c. 1×/2 Wochen` : 'Aranesp® ~50 µg s.c. 1×/2 Wochen';
           epoDetail = `Hb ${hb} g/dl — ESA-Startdosis oder Eskalation (+50% nach > 90d).<br>
-            • Startdosis (Plan 2 prä-Dialyse): 0,75 µg/kg 1×/2 Wochen s.c.${darboCalc}<br>
+            • Startdosis: 0,75 µg/kg 1×/2 Wochen s.c.${darboCalc}<br>
             • Verfügbare Ampullengrößen: 10, 15, 20, 30, 40, 50, 60, 80, 100, 150 µg<br>
             • Im Verlauf: Wochendosis × 4 monatlich (ca. 100 µg/Monat)<br>
             • Äquivalenz: 6.000 IE Epoetin = 30 µg Aranesp pro Woche<br>
@@ -2011,7 +2011,7 @@ function generateCKDMBDPanel({ weight, dialysisSt, hb, ferritin, tsat, pth, bica
           }
           epoTitle = '💉 Epoetin alfa — HD';
           epoDose  = weight ? `Erypo®/Epoetin alfa ${epoAlfaDose} i.v. 3×/Woche post-HD` : 'Epoetin alfa 2.000–4.000 IE i.v. 3×/Woche';
-          epoDetail = `Hb ${hb} g/dl — ESA-Startdosis (Plan 2 Seite 120).${epoCalc}<br>
+          epoDetail = `Hb ${hb} g/dl — ESA-Startdosis.${epoCalc}<br>
             • Startdosis: 50 IE/kg 3×/Woche i.v. post-HD (ca. 2.000–4.000 IE)<br>
             • Äquivalenz: 6.000 IE/Wo Epoetin ≈ 30 µg/Wo Darbepoetin<br>
             • Hb-Kontrolle monatlich<br>
@@ -2037,7 +2037,7 @@ function generateCKDMBDPanel({ weight, dialysisSt, hb, ferritin, tsat, pth, bica
       epoColor = 'red';
       epoTitle = '🚨 Hb < 8 g/dl — Transfusion evaluieren';
       epoDose  = 'Erythrozytenkonzentrat (EK) evaluieren + ESA';
-      epoDetail = `Hb ${hb} g/dl — EK-Gabe nach Klinik evaluieren (Plan 2: Hb < 8 → EK evaluieren).<br>
+      epoDetail = `Hb ${hb} g/dl — EK-Gabe nach Klinik evaluieren (Hb < 8 → EK evaluieren).<br>
         • EK bei symptomatischer Anämie (Dyspnoe, Angina, Bewusstseinsminderung)<br>
         • ESA +50% (nach > 90 Tagen ohne Ansprechen)<br>
         • Eisenstatus prüfen und optimieren<br>
@@ -2052,7 +2052,7 @@ function generateCKDMBDPanel({ weight, dialysisSt, hb, ferritin, tsat, pth, bica
     </div>`;
   }
 
-  // ── 3. BIKARBONAT — Plan 2 Seite 115/117 ─────────────────────────────────
+  // ── 3. BIKARBONAT ──────────────────────────────────────────────────────────
   // Ziel: HCO₃⁻ > 22 mmol/l | Start-Schwelle (hausinternes Protokoll): < 19 mmol/l
   // Produkte: Bicanorm® 1g / Nephrotrans® 840 mg, 3-6 Kps./d
   if (bicarb !== null) {
@@ -2093,7 +2093,7 @@ function generateCKDMBDPanel({ weight, dialysisSt, hb, ferritin, tsat, pth, bica
         • Ziel: HCO₃⁻ > 22 mmol/l<br>
         • Kontrolle nach 2–4 Wochen<br>
         • Bei HCO₃⁻ &lt; 15 oder pH &lt; 7,1: i.v.-Ausgleich erwägen`;
-      bicCaveat = 'Cave: Bikarbonat-Therapie bei Laktat-Azidose nur wenn pH < 7,1 (Plan 2 Seite 123). Kalzium-Substitution ggf. nötig.';
+      bicCaveat = 'Cave: Bikarbonat-Therapie bei Laktat-Azidose nur wenn pH < 7,1. Kalzium-Substitution ggf. nötig.';
     }
     cards += `<div class="dose-card ${bicColor}">
       <h3>${bicTitle}</h3>
@@ -2103,7 +2103,7 @@ function generateCKDMBDPanel({ weight, dialysisSt, hb, ferritin, tsat, pth, bica
     </div>`;
   }
 
-  // ── 4. PHOSPHAT — Plan 2 Seite 121 ───────────────────────────────────────
+  // ── 4. PHOSPHAT ────────────────────────────────────────────────────────────
   // Ziel: "in Richtung" Normalwerte (< 1,45 mmol/l) | Phosphatarme Diät < 1.000 mg/d
   // Binder nur bei dauerhafter Erhöhung
   if (phosphat !== null) {
@@ -2115,7 +2115,7 @@ function generateCKDMBDPanel({ weight, dialysisSt, hb, ferritin, tsat, pth, bica
       phColor = 'green';
       phTitle = '✅ Phosphat — im Zielbereich';
       phDose  = 'Keine Phosphatbinder erforderlich';
-      phDetail = `Phosphat ${phosphat} mmol/l — Ziel &lt; 1,45 mmol/l (Plan 2 Seite 121).<br>
+      phDetail = `Phosphat ${phosphat} mmol/l — Ziel &lt; 1,45 mmol/l.<br>
         Phosphatarme Ernährung beibehalten (&lt; 1.000 mg/d). Meiden: Fertigprodukte (E338–341, E450), Cola, Schmelzkäse.`;
     } else if (phosphat <= 1.7) {
       phColor = 'orange';
@@ -2166,7 +2166,7 @@ function generateCKDMBDPanel({ weight, dialysisSt, hb, ferritin, tsat, pth, bica
     </div>`;
   }
 
-  // ── 5. PTH & Vitamin D — Plan 2 Seite 121 ────────────────────────────────
+  // ── 5. PTH & Vitamin D ─────────────────────────────────────────────────────
   // Normalbereich: 14–72 pg/ml | Ziel CKD: VitD 40–60 ng/ml
   // ab GFR < 60: IMMER Cholecalciferol (Dekristol® 20.000 IE/Woche)
   if (pth !== null || vitd !== null) {
@@ -2188,8 +2188,8 @@ function generateCKDMBDPanel({ weight, dialysisSt, hb, ferritin, tsat, pth, bica
       }
 
       let vdDetail = `25-OH-Vitamin D: ${vitd !== null ? vitd + ' ng/ml' : 'nicht bestimmt'}<br>
-        Ziel CKD (Plan 2): 40–60 ng/ml | Allgemein: &gt; 30 ng/ml<br>
-        Ab GFR &lt; 60: <strong>immer Vitamin D-Substitution</strong> (Plan 2 Seite 121).<br>
+        Ziel CKD: 40–60 ng/ml | Allgemein: &gt; 30 ng/ml<br>
+        Ab GFR &lt; 60: <strong>immer Vitamin D-Substitution</strong>.<br>
         ${vitd !== null && vitd < 20 ? '• Mangel: <strong>20.000 IE 2×/Woche × 8 Wochen</strong>, dann 1×/Woche' :
           vitd !== null && vitd < vitdTarget ? '• Insuffizienz: <strong>20.000 IE 1×/Woche</strong> (3.000 IE/d)' :
           vitd !== null ? '• Zielbereich — Erhaltungsdosis 20.000 IE/Woche fortführen' :
@@ -2204,7 +2204,7 @@ function generateCKDMBDPanel({ weight, dialysisSt, hb, ferritin, tsat, pth, bica
   }
 
   if (pth !== null) {
-    // PTH staging targets (Plan 2 Seite 121: Normal 14-72 pg/ml)
+    // PTH staging targets (Normal 14-72 pg/ml, KDIGO)
     const pthNormalHigh = 72;
     // Stage-based upper limits for pre-dialysis (pragmatic)
     const pthStageMax = { G1: 72, G2: 72, G3a: 100, G3b: 150, G4: 300, G5: 300 };
@@ -2233,7 +2233,7 @@ function generateCKDMBDPanel({ weight, dialysisSt, hb, ferritin, tsat, pth, bica
         pthTitle = '⚠️ sHPT — erhöht (Dialyse)';
         pthDose  = 'Cinacalcet (Mimpara®) 30 mg/d, Titration nach 4 Wo';
         pthDetail = `iPTH ${pth} pg/ml — über Ziel 150–300 pg/ml.<br>
-          Plan 2 Stufentherapie (Seite 121):<br>
+          Stufentherapie:<br>
           1. Phosphat + Ca normalisieren<br>
           2. <strong>Cinacalcet (Mimpara®) 30 mg/d</strong> → Titration: 60 → meist 60 mg/d; bei Ca/PO₄-Anstieg aktives VitD absetzen<br>
           3. <strong>Etelcalcetid (Parsabiv®)</strong> 5 mg 3×/Woche i.v. am Ende HD (Ca &gt; 2,08 mmol/l!)<br>
@@ -2249,7 +2249,7 @@ function generateCKDMBDPanel({ weight, dialysisSt, hb, ferritin, tsat, pth, bica
           • Etelcalcetid (Parsabiv®) 5 mg 3×/Woche i.v. als Alternative<br>
           • Bei iPTH &gt; 800 + therapierefraktär: <strong>Parathyreoidektomie</strong> erwägen<br>
           • Bildgebung: Halssonographie + Sestamibi-Szintigraphie`;
-        pthCaveat = 'Cave: Parathyreoidektomie bei therapierefraktärem sHPT > 800 pg/ml — Hungry Bone Syndrom post-Op möglich (Plan 2 Seite 122).';
+        pthCaveat = 'Cave: Parathyreoidektomie bei therapierefraktärem sHPT > 800 pg/ml — Hungry Bone Syndrom post-Op möglich.';
       }
     } else {
       // Prä-Dialyse
@@ -2258,7 +2258,7 @@ function generateCKDMBDPanel({ weight, dialysisSt, hb, ferritin, tsat, pth, bica
         pthTitle = `✅ PTH — Zielbereich (${stage || 'CKD'})`;
         pthDose  = 'Keine spezifische PTH-Therapie';
         pthDetail = `iPTH ${pth} pg/ml — Normalbereich 14–72 pg/ml, tolerierter Bereich für ${stage}: bis ${pthMax} pg/ml.<br>
-          Zuerst Hyperphosphatämie und VitD-Mangel behandeln (Plan 2 Seite 121).<br>
+          Zuerst Hyperphosphatämie und VitD-Mangel behandeln.<br>
           Kontrolle alle 6–12 Monate.`;
       } else {
         pthColor = 'orange';
@@ -2270,7 +2270,7 @@ function generateCKDMBDPanel({ weight, dialysisSt, hb, ferritin, tsat, pth, bica
           pthDose = 'Schritt 1: Cholecalciferol (Dekristol® 20.000) — VitD auffüllen';
           pthDetail = `iPTH ${pth} pg/ml — über Ziel (${pthMax} pg/ml für ${stage}).<br>
             ${vitdUnknown ? '<strong>25-OH-Vit D nicht bestimmt — bitte nachmessen!</strong>' : `25-OH-Vit D ${vitd} ng/ml — unzureichend (Ziel 40–60 ng/ml).`}<br>
-            <strong>Plan 2 Stufentherapie (Seite 121):</strong><br>
+            <strong>Stufentherapie:</strong><br>
             1. <strong>Phosphatarme Diät + Phosphatbinder</strong> (PO₄ normalisieren)<br>
             2. <strong>Cholecalciferol (Dekristol® 20.000 IE)</strong>:
               ${vitd !== null && vitd < 20 ? '2×/Woche × 8 Wochen (Mangel), dann 1×/Woche' : '1×/Woche (Erhaltung/Auffüllung)'}<br>
@@ -2282,13 +2282,13 @@ function generateCKDMBDPanel({ weight, dialysisSt, hb, ferritin, tsat, pth, bica
         } else {
           pthDose = 'Aktives Vitamin D: Calcitriol (Decostriol®) 0,25 µg 3×/Woche';
           pthDetail = `iPTH ${pth} pg/ml — über Ziel. 25-OH-VitD ${vitd} ng/ml — ausreichend.<br>
-            Plan 2 Seite 121: Aktives Vit D nur bei schwerem oder progredientem sHPT prä-Dialyse!<br>
+            Aktives Vit D nur bei schwerem oder progredientem sHPT prä-Dialyse!<br>
             • <strong>Calcitriol (Decostriol®)</strong> 0,25–0,5 µg 3×/Woche po<br>
             • Alternativ: Extended-Release Calcifediol (Rayaldee®) 30 µg/d<br>
             • Ca + PO₄ nach 4 Wochen kontrollieren (Hyperkalzämie-Risiko!)<br>
             • PTH-Kontrolle nach 3 Monaten`;
         }
-        pthCaveat = 'Cave: Aktives VitD nur wenn Ca < 2,55 mmol/l und Phosphat kontrolliert. Hypercalcämie unbedingt vermeiden! (Plan 2 Seite 121)';
+        pthCaveat = 'Cave: Aktives VitD nur wenn Ca < 2,55 mmol/l und Phosphat kontrolliert. Hypercalcämie unbedingt vermeiden!';
       }
     }
     cards += `<div class="dose-card ${pthColor}">
