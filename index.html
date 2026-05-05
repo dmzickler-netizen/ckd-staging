@@ -112,6 +112,13 @@
   }
   .btn-calc:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(57,73,171,0.5); }
   .btn-calc:active { transform: translateY(0); }
+  .btn-reset {
+    width: 100%; padding: 10px 18px; border: 2px solid #b71c1c; border-radius: 10px;
+    background: white; color: #b71c1c; font-size: 0.88rem; font-weight: 700;
+    cursor: pointer; letter-spacing: 0.3px; transition: all 0.15s ease; margin-top: 8px;
+  }
+  .btn-reset:hover { background: #ffebee; transform: translateY(-1px); }
+  .btn-reset:active { transform: translateY(0); }
 
   /* eGFR Results */
   .egfr-results {
@@ -315,38 +322,6 @@
     margin-top: 20px;
   }
 
-  /* Drug calculator */
-  .drug-search {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1.5px solid #cfd8dc;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    margin-bottom: 12px;
-    background: #fafafa;
-  }
-  .drug-search:focus { outline: none; border-color: #3949ab; background: white; }
-  .drug-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
-  .drug-table th {
-    background: #e8eaf6;
-    color: #1a237e;
-    font-weight: 700;
-    padding: 7px 8px;
-    text-align: left;
-    border-bottom: 2px solid #c5cae9;
-    position: sticky;
-    top: 0;
-  }
-  .drug-table td { padding: 6px 8px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
-  .drug-table tr:hover td { background: #f5f5ff; }
-  .drug-table tr.hidden { display: none; }
-  .drug-table .cat-row td { background: #e8eaf6; font-weight: 700; color: #1a237e; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
-  .dose-ok { color: #2e7d32; font-weight: 600; }
-  .dose-reduce { color: #e65100; font-weight: 600; }
-  .dose-ci { color: #b71c1c; font-weight: 700; }
-  .drug-table-wrap { max-height: 420px; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 8px; }
-  .egfr-highlight { background: #fffde7; }
-
   /* Electrolyte panel */
   .electro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .electro-card {
@@ -384,7 +359,7 @@
     body { background: white; font-size: 11pt; }
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
     header, footer, .card:not(#print-card), button, .tabs, .tab-btn,
-    .btn-copy, .btn-print, .btn-calc, #drug-calc-section, #electrolyte-section { display: none !important; }
+    .btn-copy, .btn-print, .btn-calc, #electrolyte-section { display: none !important; }
     #print-card { display: block !important; box-shadow: none; border: none; padding: 0; }
     .print-header { border-bottom: 2px solid #1a237e; margin-bottom: 16px; padding-bottom: 8px; }
     .print-header h2 { font-size: 14pt; color: #1a237e; }
@@ -424,6 +399,22 @@
     padding-bottom: 4px;
   }
   .mbd-placeholder { color: #90a4ae; font-size: 0.85rem; text-align: center; padding: 20px; }
+
+  /* Hypertonie Panel */
+  .bp-status-ok      { background: #e8f5e9; border: 2px solid #4caf50; border-radius: 8px; padding: 10px 14px; }
+  .bp-status-warn    { background: #fff8e1; border: 2px solid #ff9800; border-radius: 8px; padding: 10px 14px; }
+  .bp-status-bad     { background: #ffebee; border: 2px solid #f44336; border-radius: 8px; padding: 10px 14px; }
+  .bp-status-unknown { background: #f5f5f5; border: 2px solid #bdbdbd; border-radius: 8px; padding: 10px 14px; }
+  .bp-big { font-size: 2.2rem; font-weight: 800; text-align: center; letter-spacing: 1px; }
+  .bp-label-sm { font-size: 0.75rem; text-align: center; margin-top: 4px; font-weight: 600; }
+  .htn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .htn-step { padding: 10px 14px; border-radius: 8px; font-size: 0.82rem; }
+  .htn-step-1 { background: #e3f2fd; border-left: 4px solid #1976d2; }
+  .htn-step-2 { background: #fce4ec; border-left: 4px solid #c62828; }
+  .htn-step-3 { background: #f3e5f5; border-left: 4px solid #6a1b9a; }
+  .htn-step .htn-step-title { font-weight: 700; color: #1a237e; margin-bottom: 6px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; }
+  .htn-note { margin-top: 10px; padding: 8px 12px; background: #fff8e1; border-radius: 6px; font-size: 0.78rem; border-left: 3px solid #ff9800; }
+  .htn-warning { margin-top: 8px; padding: 8px 12px; background: #ffebee; border-radius: 6px; font-size: 0.78rem; border-left: 3px solid #f44336; }
 </style>
 </head>
 <body>
@@ -481,9 +472,17 @@
           <span class="unit">mg/g Kreatinin</span>
         </div>
         <div class="form-group">
-          <label>Blutdruck (systolisch)</label>
-          <input type="number" id="bp_sys" placeholder="z.B. 145" min="80" max="250">
-          <span class="unit">mmHg (optional, für Arztbrief)</span>
+          <label>Blutdruck</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+            <div>
+              <input type="number" id="bp_sys" placeholder="Sys. z.B. 145" min="80" max="250" style="width:100%;">
+              <span class="unit">mmHg sys.</span>
+            </div>
+            <div>
+              <input type="number" id="bp_dia" placeholder="Dia. z.B. 90" min="40" max="150" style="width:100%;">
+              <span class="unit">mmHg dia.</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -617,6 +616,7 @@
       </div>
 
       <button class="btn-calc" onclick="calculate()">🧮 Staging berechnen &amp; Arztbrief generieren</button>
+      <button class="btn-reset" onclick="resetForm()">🗑️ Neuer Patient — alles leeren</button>
     </div>
 
     <!-- RESULTS -->
@@ -703,36 +703,8 @@
   </div>
 
 
-  <!-- Row 3: Drug Calculator + Electrolytes -->
-  <div class="grid-2" style="margin-top:20px;" id="drug-calc-section">
-    <div class="card">
-      <h2>💊 Medikamenten-Dosisrechner nach eGFR</h2>
-      <div style="display:flex;gap:10px;margin-bottom:10px;align-items:center;">
-        <input type="text" class="drug-search" id="drug-search" placeholder="🔍 Medikament suchen …" oninput="filterDrugs()">
-        <div style="white-space:nowrap;font-size:0.8rem;color:#607d8b;">
-          Aktuell: <strong id="current-egfr-display">— ml/min</strong>
-        </div>
-      </div>
-      <div class="drug-table-wrap">
-        <table class="drug-table" id="drug-table">
-          <thead>
-            <tr>
-              <th style="width:24%">Medikament</th>
-              <th style="width:10%">≥60</th>
-              <th style="width:13%">45–59</th>
-              <th style="width:13%">30–44</th>
-              <th style="width:13%">15–29</th>
-              <th style="width:13%">&lt;15 / Dialyse</th>
-              <th style="width:14%">Hinweis</th>
-            </tr>
-          </thead>
-          <tbody id="drug-tbody"></tbody>
-        </table>
-      </div>
-      <p style="font-size:0.7rem;color:#90a4ae;margin-top:8px;">Quellen: Fachinformationen, KDIGO 2024, Dosierungsempfehlungen bei Niereninsuffizienz (Lacy et al.). Immer aktuelle Fachinformation prüfen.</p>
-    </div>
-
-    <div class="card" id="electrolyte-section">
+  <!-- Row 3: Elektrolyte -->
+  <div class="card" style="margin-top:20px;" id="electrolyte-section">
       <h2>⚗️ Elektrolyt- &amp; Metabolit-Grenzwerte</h2>
       <div class="electro-grid">
 
@@ -798,13 +770,20 @@
 
       </div>
     </div>
-  </div>
 
   <!-- Row 4: CKD-MBD Dosierungsrechner -->
   <div class="card" style="margin-top:20px;">
     <h2>💉 CKD-MBD &amp; Anämie — Dosierungsempfehlung</h2>
     <div id="mbd-panel">
       <div class="mbd-placeholder">Bitte Labordaten eingeben und Berechnung starten.</div>
+    </div>
+  </div>
+
+  <!-- Row 5: Hypertonie -->
+  <div class="card" style="margin-top:20px;" id="hypertonie-section">
+    <h2>🩺 Hypertonie-Management bei CKD <small style="font-weight:400;font-size:0.75rem;color:#90a4ae;">KDIGO 2021 BP Guideline</small></h2>
+    <div id="hypertonie-panel">
+      <div class="mbd-placeholder">Bitte Blutdruck und Labordaten eingeben und Berechnung starten.</div>
     </div>
   </div>
 
@@ -816,7 +795,7 @@
 </div>
 
 <footer>
-  ⚕️ Nur zur ärztlichen Unterstützung — kein Ersatz für klinisches Urteil &bull; KDIGO CKD 2024 &bull; CKD-EPI 2021 &bull; v1.1
+  ⚕️ Nur zur ärztlichen Unterstützung — kein Ersatz für klinisches Urteil &bull; KDIGO CKD 2024 &bull; KDIGO BP 2021 &bull; CKD-EPI 2021 &bull; v1.2
 </footer>
 
 <script>
@@ -951,6 +930,50 @@ function buildMatrix(activeRow, activeCol) {
 }
 
 // ===== CALCULATE =====
+function resetForm() {
+  // Alle Zahleneingaben leeren
+  ['age','creatinine','cystatinc','uacr','bp_sys','bp_dia','kalium','ph',
+   'weight','hb','ferritin','tsat','pth','bicarb','phosphat','calcium','vitd'
+  ].forEach(id => { document.getElementById(id).value = ''; });
+
+  // Selects auf Default
+  document.getElementById('sex').value = '';
+  document.getElementById('dialysis_status').value = 'praedialysis';
+
+  // Alle Grunderkrankungs-Checkboxen deaktivieren
+  document.querySelectorAll('#disease-checkboxes input[type=checkbox]').forEach(cb => {
+    cb.checked = false;
+    cb.closest('label').classList.remove('checked');
+  });
+
+  // Freitextfelder
+  document.getElementById('vordiagnosen').value = '';
+  document.getElementById('extra_info').value = '';
+
+  // Arztbrief-Textfelder
+  ['text-diagnose','text-befund','text-empfehlung'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+
+  // Ergebnispanels zurücksetzen
+  document.getElementById('results-panel').innerHTML =
+    '<div class="placeholder-text">Bitte Daten eingeben und Berechnung starten.</div>';
+  document.getElementById('therapy-panel').innerHTML =
+    '<div class="placeholder-text">Wird nach Berechnung generiert.</div>';
+  document.getElementById('mbd-panel').innerHTML =
+    '<div class="mbd-placeholder">Bitte Labordaten eingeben und Berechnung starten.</div>';
+  document.getElementById('hypertonie-panel').innerHTML =
+    '<div class="mbd-placeholder">Bitte Blutdruck und Labordaten eingeben und Berechnung starten.</div>';
+
+  // Globale Zustandsvariablen zurücksetzen
+  _lastGFRStage = null;
+  _lastAlbStage = null;
+  _lastRiskInfo = null;
+
+  // Matrix ohne Markierung neu aufbauen
+  buildMatrix(-1, -1);
+}
+
 function calculate() {
   const age  = parseFloat(document.getElementById('age').value);
   const sex  = document.getElementById('sex').value;
@@ -959,6 +982,7 @@ function calculate() {
   const uacrRaw = document.getElementById('uacr').value;
   const uacr = uacrRaw !== '' ? parseFloat(uacrRaw) : null;
   const bpSys = document.getElementById('bp_sys').value;
+  const bpDia = document.getElementById('bp_dia').value;
   const extraInfo = document.getElementById('extra_info').value;
 
   // New lab fields
@@ -1073,17 +1097,17 @@ function calculate() {
   // Build matrix
   buildMatrix(gfrStage ? gfrStage.row : -1, albStage ? albStage.col : -1);
 
-  // Update drug table with current eGFR
-  updateDrugEGFR(primaryEGFR);
-
   // Store for print matrix
   _lastGFRStage = gfrStage; _lastAlbStage = albStage; _lastRiskInfo = riskInfo;
 
   // Generate CKD-MBD dosing panel
   generateCKDMBDPanel({ weight, dialysisSt, hb, ferritin, tsat, pth, bicarb, phosphat, calcium, vitd, gfrStage });
 
+  // Build Hypertonie panel
+  buildHypertoniePanel({ egfr: primaryEGFR, uacr, diseases: checkedDiseases, bpSys, bpDia, kalium });
+
   // Generate texts
-  generateTexts(age, sex, scr, cys, uacr, bpSys, extraInfo, eGFR_cr, eGFR_cys, eGFR_comb, primaryEGFR, gfrStage, albStage, riskInfo, checkedDiseases, { hb, ferritin, tsat, pth, bicarb, phosphat, calcium, kalium, ph }, vordiagnosen);
+  generateTexts(age, sex, scr, cys, uacr, bpSys, bpDia, extraInfo, eGFR_cr, eGFR_cys, eGFR_comb, primaryEGFR, gfrStage, albStage, riskInfo, checkedDiseases, { hb, ferritin, tsat, pth, bicarb, phosphat, calcium, kalium, ph }, vordiagnosen);
 }
 
 // ===== TEXT GENERATION =====
@@ -1103,7 +1127,7 @@ function diseaseLabel(d) {
   return map[d] || d;
 }
 
-function generateTexts(age, sex, scr, cys, uacr, bpSys, extraInfo,
+function generateTexts(age, sex, scr, cys, uacr, bpSys, bpDia, extraInfo,
   eGFR_cr, eGFR_cys, eGFR_comb, primaryEGFR, gfrStage, albStage, riskInfo, diseases, labs, vordiagnosen) {
   const { hb, ferritin, tsat, pth, bicarb, phosphat, calcium, kalium, ph } = labs || {};
 
@@ -1173,7 +1197,7 @@ function generateTexts(age, sex, scr, cys, uacr, bpSys, extraInfo,
   if (eGFR_cys) befundText += `- eGFR (CKD-EPI 2021, Cystatin C): ${eGFR_cys} ml/min/1,73 m²\n`;
   if (eGFR_comb) befundText += `- eGFR (CKD-EPI 2021, kombiniert): ${eGFR_comb} ml/min/1,73 m² [verwendeter Wert]\n`;
   if (uacr !== null) befundText += `- Urin-Albumin-Kreatinin-Ratio (uACR): ${uacr} mg/g\n`;
-  if (bpSys)    befundText += `- Blutdruck: ${bpSys} mmHg systolisch\n`;
+  if (bpSys)    befundText += `- Blutdruck: ${bpSys}${bpDia ? ' / ' + bpDia : ''} mmHg${bpDia ? '' : ' systolisch'}\n`;
   if (kalium)   befundText += `- Kalium: ${kalium} mmol/l\n`;
   if (ph)       befundText += `- pH (venös): ${ph}${ph < 7.35 ? ' → metabolische Azidose' : ph > 7.45 ? ' → Alkalose' : ' → normal'}\n`;
   if (hb)       befundText += `- Hämoglobin: ${hb} g/dl\n`;
@@ -1214,7 +1238,18 @@ function generateTexts(age, sex, scr, cys, uacr, bpSys, extraInfo,
   if (gfrStage) {
     const stage = gfrStage.stage;
 
-    recList.push('Blutdruckziel: < 120–130/70–80 mmHg (KDIGO 2024); RAAS-Blockade bevorzugen');
+    // BP target (context-specific per KDIGO 2021 BP Guideline)
+    const isTransplantRec = diseases.includes('transplantat');
+    const isADPKDRec      = diseases.includes('adpkd');
+    let bpTarget;
+    if (isADPKDRec) {
+      bpTarget = '< 110/75 mmHg (ADPKD, HALT-PKD); ACE-Hemmer/ARB bevorzugen';
+    } else if (isTransplantRec) {
+      bpTarget = '< 130/80 mmHg (Nierentransplantat, KDIGO 2021); CCB oder ARB als Erstlinie (Grad 1C)';
+    } else {
+      bpTarget = '< 120 mmHg systolisch (CKD, KDIGO 2021, Grad 2B); standardisierte Büromessung (AOBP)';
+    }
+    recList.push(`Blutdruckziel: ${bpTarget}`);
 
     if (uacr && uacr >= 30) {
       recList.push('RAS-Blockade: ACE-Hemmer oder AT1-Antagonist in maximal tolerierter Dosis (Ziel-ACR-Reduktion ≥ 30%)');
@@ -1472,6 +1507,197 @@ function buildTherapyPanel(gfrStage, albStage, egfr, uacr, diseases, riskInfo) {
   document.getElementById('therapy-panel').innerHTML = html;
 }
 
+// ===== HYPERTONIE PANEL =====
+function buildHypertoniePanel({ egfr, uacr, diseases, bpSys, bpDia, kalium }) {
+  const panel = document.getElementById('hypertonie-panel');
+  if (!panel) return;
+
+  const isTransplant = diseases.includes('transplantat');
+  const isDiabetes   = diseases.includes('diabetisch');
+  const isADPKD      = diseases.includes('adpkd');
+
+  // BP target
+  let targetSys, targetDia, targetNote, targetLabel;
+  if (isADPKD) {
+    targetSys = 110; targetDia = 75;
+    targetLabel = '< 110 / 75 mmHg';
+    targetNote = 'ADPKD (HALT-PKD): strengeres Ziel bei Hochrisiko-Patienten';
+  } else if (isTransplant) {
+    targetSys = 130; targetDia = 80;
+    targetLabel = '< 130 / 80 mmHg';
+    targetNote = 'Nierentransplantat: KDIGO 2021, Practice Point — CCB oder ARB bevorzugt';
+  } else {
+    targetSys = 120; targetDia = null;
+    targetLabel = '< 120 mmHg systolisch';
+    targetNote = 'CKD (KDIGO 2021, Grad 2B): standardisierte Büromessung (AOBP) — bei Intoleranz < 130 mmHg';
+  }
+
+  // BP status
+  const sysNum = bpSys ? parseFloat(bpSys) : null;
+  const diaNum = bpDia ? parseFloat(bpDia) : null;
+  let bpStatusClass, bpStatusIcon, bpStatusMsg;
+  if (!sysNum) {
+    bpStatusClass = 'bp-status-unknown';
+    bpStatusIcon  = '—';
+    bpStatusMsg   = 'Kein Blutdruck eingegeben';
+  } else if (sysNum < targetSys && (!targetDia || !diaNum || diaNum < targetDia)) {
+    bpStatusClass = 'bp-status-ok';
+    bpStatusIcon  = '✅';
+    bpStatusMsg   = 'Blutdruckziel erreicht';
+  } else if (sysNum < 140) {
+    bpStatusClass = 'bp-status-warn';
+    bpStatusIcon  = '⚠️';
+    bpStatusMsg   = 'Ziel nicht erreicht — Therapie optimieren';
+  } else {
+    bpStatusClass = 'bp-status-bad';
+    bpStatusIcon  = '🔴';
+    bpStatusMsg   = 'Unkontrollierte Hypertonie — dringend behandeln';
+  }
+
+  // RAAS indication
+  const strongRAAS = (uacr && uacr >= 300) || (isDiabetes && uacr && uacr >= 30);
+  const anyRAAS    = (uacr && uacr >= 30) || isDiabetes || diseases.includes('hypertensiv');
+
+  // Kalium alerts
+  const kHigh = kalium && kalium >= 5.5;
+  const kMod  = kalium && kalium >= 5.0 && kalium < 5.5;
+
+  // Step 1 drugs
+  let step1, step1Grade, step1Note;
+  if (isTransplant) {
+    step1      = 'Dihydropyridin-CCB (Amlodipin/Lercanidipin) <em>oder</em> ARB';
+    step1Grade = 'Grad 1C';
+    step1Note  = 'CCB ↓ Transplantatverlust −26% (Meta-Analyse); ARB ↓ −65% (3 RCTs). Frühpostoperativ ARB meiden bis stabile Fx.';
+  } else if (strongRAAS) {
+    step1      = 'ACE-Hemmer <em>oder</em> ARB — max. tolerierte Dosis';
+    step1Grade = 'Grad 1B';
+    step1Note  = 'Starke Empfehlung bei uACR ≥ 300 mg/g oder Diabetes + uACR ≥ 30 mg/g. Ziel: ACR-Reduktion ≥ 30%.';
+  } else if (anyRAAS) {
+    step1      = 'ACE-Hemmer <em>oder</em> ARB';
+    step1Grade = 'Grad 2C / 1B';
+    step1Note  = 'Empfohlen bei uACR 30–299 mg/g (2C) oder Diabetes + Hypertonie (1B). Nephro- und kardioprotektiv.';
+  } else {
+    step1      = 'CCB (Amlodipin 5–10 mg) <em>oder</em> Thiazid-artiges Diuretikum';
+    step1Grade = 'Practice Point';
+    step1Note  = 'Keine spezifische RAAS-Indikation. Kombination RASi + CCB + Thiazid wenn ≥ 2 Substanzen nötig.';
+  }
+
+  // Diuretic note (eGFR-based)
+  let diureticNote = '';
+  if (egfr !== null && egfr < 30) {
+    diureticNote = `<div class="htn-note">💊 eGFR ${Math.round(egfr)} ml/min: HCT verliert Wirksamkeit → <strong>Chlortalidon, Indapamid oder Metolazon</strong> bevorzugen. Bei Volumenüberlastung: <strong>Schleifendiuretikum</strong> (Torasemid/Furosemid).</div>`;
+  } else if (egfr !== null && egfr < 60) {
+    diureticNote = `<div class="htn-note">💊 eGFR ${Math.round(egfr)} ml/min: Thiazide noch wirksam — <strong>Chlortalidon oder Indapamid</strong> HCT vorziehen (längere Wirkdauer, bessere Evidenz).</div>`;
+  }
+
+  // MRA / K+ warning
+  let mraBlock = '';
+  if (kHigh) {
+    mraBlock = `<div class="htn-warning">⚠️ K⁺ ${kalium} mmol/l: MRA/Spironolacton <strong>kontraindiziert</strong>. RAAS-Initiierung nur mit engmaschigem Monitoring. Kaliumsenker (Patiromer/SZC) erwägen vor Dosisreduktion.</div>`;
+  } else if (kMod) {
+    mraBlock = `<div class="htn-warning">⚠️ K⁺ ${kalium} mmol/l: MRA nur mit engmaschigem K⁺-Monitoring (Ziel < 5,0). Patiromer (Veltassa) oder SZC (Lokelma) bereithalten.</div>`;
+  } else if (egfr !== null && egfr < 30) {
+    mraBlock = `<div class="htn-note">MRA (Spironolacton/Eplerenon) bei eGFR < 30 mit erhöhtem Hyperkaliämie-Risiko — nur unter engmaschiger Kontrolle (K⁺, eGFR alle 4 Wochen).</div>`;
+  }
+
+  // Dual-RAAS warning
+  const dualRaasWarning = `<div class="htn-warning">🚫 <strong>Dual-RAAS-Blockade verboten (Grad 1B):</strong> ACEi + ARB + DRI (Aliskiren) → kein Zusatznutzen, aber +40% AKI-Risiko + Hyperkaliämie (ONTARGET, VA-NEPHRON-D). ACEi + MRA in bestimmten Situationen vertretbar.</div>`;
+
+  // Build HTML
+  let html = '';
+
+  // Top row: BP status + Step 1
+  html += `<div class="htn-grid">
+    <div class="dose-card ${!sysNum ? 'grey' : sysNum < targetSys ? 'green' : sysNum < 140 ? 'orange' : 'red'}">
+      <h3>🩺 Aktueller Blutdruck</h3>
+      <div class="${bpStatusClass}">
+        <div class="bp-big">${sysNum ? (diaNum ? sysNum + ' / ' + diaNum : sysNum + ' / —') : '— / —'} <span style="font-size:1rem;font-weight:400;">mmHg</span></div>
+        <div class="bp-label-sm">${bpStatusIcon} ${bpStatusMsg}</div>
+      </div>
+      <div style="margin-top:10px;font-size:0.8rem;">
+        <strong>Zielwert:</strong> ${targetLabel}<br>
+        <span style="font-size:0.72rem;color:#607d8b;">${targetNote}</span>
+      </div>
+    </div>
+
+    <div class="dose-card ${strongRAAS ? 'blue' : anyRAAS ? 'blue' : 'grey'}">
+      <h3>💊 Erstlinientherapie <span style="font-weight:400;font-size:0.72rem;color:#607d8b;">${step1Grade}</span></h3>
+      <div class="dose-main">${step1}</div>
+      <div class="dose-detail">${step1Note}</div>
+      ${kHigh ? `<div class="dose-caveat">⚠️ K⁺ ${kalium} mmol/l — RAAS mit Vorsicht, K⁺ nach 2 Wochen kontrollieren</div>` : ''}
+    </div>
+  </div>`;
+
+  // Combination therapy 3-col
+  html += `<div class="dose-card grey" style="margin-bottom:14px;">
+    <h3>🔢 Stufentherapie — Kombinationsalgorithmus (KDIGO 2021 / SPRINT)</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:10px;">
+      <div class="htn-step htn-step-1">
+        <div class="htn-step-title">Schritt 1–2</div>
+        <ul style="padding-left:18px;margin:0;line-height:1.6;">
+          <li>${anyRAAS ? '<span class="drug-tag primary">ACEi oder ARB</span>' : '<span class="drug-tag primary">CCB (Amlodipin)</span>'}</li>
+          <li><span class="drug-tag primary">CCB</span> (Amlodipin/Lercanidipin)</li>
+          <li><span class="drug-tag">Thiazid-artig</span>${egfr !== null && egfr < 30 ? ' → Chlortalidon/Indapamid' : ' (Chlortalidon/Indapamid)'}</li>
+        </ul>
+        <div style="font-size:0.7rem;color:#1565c0;margin-top:6px;">Ziel: ≥ 2–3 Substanzen, monatliche Titration</div>
+      </div>
+      <div class="htn-step htn-step-2">
+        <div class="htn-step-title">Schritt 3–4 (Resistente HTN)</div>
+        <ul style="padding-left:18px;margin:0;line-height:1.6;">
+          <li><span class="drug-tag">MRA</span> Spironolacton 25–50 mg</li>
+          <li><span class="drug-tag">Beta-Blocker</span> (KHK/HFrEF)</li>
+          <li><span class="drug-tag">Alpha-Blocker</span> Doxazosin</li>
+        </ul>
+        <div style="font-size:0.7rem;color:#c62828;margin-top:6px;">Cave: K⁺ vor MRA; bei eGFR &lt; 30 erhöhtes Hyperkaliämie-Risiko</div>
+      </div>
+      <div class="htn-step htn-step-3">
+        <div class="htn-step-title">Schritt 5+ (Reservemittel)</div>
+        <ul style="padding-left:18px;margin:0;line-height:1.6;">
+          <li>Hydralazin / Dihydralazin</li>
+          <li>Minoxidil (Ödeme, Hirsutismus)</li>
+          <li>Moxonidin (Cave KI &lt; 30)</li>
+          <li>Clonidin (Cave Rebound)</li>
+        </ul>
+        <div style="font-size:0.7rem;color:#6a1b9a;margin-top:6px;">Nephrologische Mitbetreuung empfohlen</div>
+      </div>
+    </div>
+    ${diureticNote}
+    ${mraBlock}
+  </div>`;
+
+  // RAAS Monitoring + Kontraindikationen
+  html += `<div class="dose-card grey">
+    <h3>🔬 RAAS-Monitoring &amp; Kontraindikationen</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px;">
+      <div>
+        <div style="font-weight:700;font-size:0.78rem;margin-bottom:6px;color:#1a237e;">Nach ACEi/ARB-Start (Practice Points):</div>
+        <ul style="font-size:0.78rem;padding-left:18px;color:#455a64;line-height:1.7;">
+          <li>K⁺ + Kreatinin + RR: <strong>2–4 Wochen</strong> nach Start/Dosissteigerung</li>
+          <li>Kreatinin-Anstieg &lt; 30 % → fortführen (funktioneller hämodynamischer Effekt)</li>
+          <li>Kreatinin-Anstieg ≥ 30 % innerhalb 4 Wochen → Dosis ↓ oder pausieren</li>
+          <li>K⁺ 5,5–6,0 mmol/l → Kaliumsenker (Patiromer/SZC) <em>vor</em> Absetzen versuchen</li>
+          <li>K⁺ &gt; 6,0 mmol/l → sofortige Dosisreduktion/Pause + EKG</li>
+          <li>eGFR &lt; 15 + Urämiesymptome → ACEi/ARB pausieren</li>
+        </ul>
+      </div>
+      <div>
+        <div style="font-weight:700;font-size:0.78rem;margin-bottom:6px;color:#1a237e;">Kontraindikationen / Besonderheiten:</div>
+        <ul style="font-size:0.78rem;padding-left:18px;color:#455a64;line-height:1.7;">
+          <li>Schwangerschaft / Kinderwunsch → <strong>CCB bevorzugen</strong> (ARB/ACEi teratogen!)</li>
+          <li>ACEi bei Angioödem-Anamnese → <strong>ARB wechseln</strong> (kein Kreuzrisiko)</li>
+          <li>Non-DHP-CCB (Diltiazem/Verapamil) + Beta-Blocker → Cave Bradykardie/AV-Block</li>
+          <li>Transplant frühpostoperativ → ARB initial meiden bis stabile Transplantatfunktion</li>
+          <li>Messung: <strong>Standardisierte Büromessung</strong> (AOBP) für Zielwert-Anwendung obligat</li>
+        </ul>
+      </div>
+    </div>
+    ${dualRaasWarning}
+    <div style="margin-top:8px;font-size:0.7rem;color:#90a4ae;">Quelle: KDIGO 2021 Clinical Practice Guideline for the Management of Blood Pressure in CKD. Kidney International 2021;99(3S):S1–S87.</div>
+  </div>`;
+
+  panel.innerHTML = html;
+}
+
 // ===== UI HELPERS =====
 function toggleCheck(label) {
   // Update visual state
@@ -1503,122 +1729,7 @@ function copyText(id) {
   setTimeout(() => btn.textContent = orig, 1500);
 }
 
-// ===== DRUG DATABASE =====
-// Columns: name, cat, ge60, 45-59, 30-44, 15-29, lt15, note
-const DRUGS = [
-  // ANTIDIABETIKA
-  ['cat','Antidiabetika','','','','','',''],
-  ['Metformin','Antidiabetika','Normal (max 2g)','Max 1g/d, engmaschig','Max 500mg/d','KI','KI','Laktatazidose-Risiko; Pause bei Kontrastmittel'],
-  ['Sitagliptin','Antidiabetika','100 mg/d','50 mg/d','25 mg/d','25 mg/d','25 mg/d','DPP4-I, keine Hypoglykämie'],
-  ['Empagliflozin','Antidiabetika','10 mg (BZ+Nephro)','10 mg (Nephro)','10 mg (Nephro)','10 mg (Nephro, eGFR ≥20)','KI für BZ','BZ-Wirkung verloren ab eGFR <45, nephroprotektiv weiter'],
-  ['Dapagliflozin','Antidiabetika','10 mg/d','10 mg/d','10 mg/d','10 mg/d (eGFR ≥25)','KI','Nephroprotektiv DAPA-CKD'],
-  ['Glibenclamid','Antidiabetika','Normal','Vermeiden','KI','KI','KI','Aktive Metaboliten akkumulieren'],
-  ['Insulin','Antidiabetika','Normal','Normal','Dosis-Check ↓','Dosis ↓↓','Dosis ↓↓, HD-Effekt','Hypoglykämiegefahr ↑ bei sinkender eGFR'],
-  ['Semaglutid','Antidiabetika','Normal','Normal','Normal','Normal','Normal','GLP-1-RA, keine renale Dosisanpassung nötig'],
-  ['Pioglitazon','Antidiabetika','Normal','Normal','Normal','Vorsicht','Vorsicht','Ödemneigung; keine renale Elim.'],
-  // KARDIOVASKULÄR
-  ['cat','Kardiovaskulär','','','','','',''],
-  ['Bisoprolol','Kardiovaskulär','Normal','Normal','Normal','Vorsicht (max 10mg)','Vorsicht','Keine renale Elim.; bei GFR <20 engmaschig'],
-  ['Atenolol','Kardiovaskulär','Normal','100% q24h','50% q24h','25% q24h','25% q48h','Renal eliminiert! Gut dialysierbar'],
-  ['Ramipril','Kardiovaskulär','Normal','Normal','Dosis ↓ 50%','Dosis ↓ 50%','Vorsicht/Dosis ↓','K+-Kontrolle; GFR-Monitoring'],
-  ['Digoxin','Kardiovaskulär','Normal','75% Normaldosis','50%','Vorsicht + Spiegel','KI / Spiegel','Toxisches Fenster eng; TDM obligat'],
-  ['Spironolacton','Kardiovaskulär','Normal','Normal, K+-Monitor','Vorsicht, K+-Monitor','KI (Hyperkaliämie)','KI','Bei GFR <30 Hyperkaliämie-Risiko hoch'],
-  ['Furosemid','Kardiovaskulär','Normal','Normal, Dosis ↑ nötig','Höhere Dosis nötig','Sehr hohe Dosen nötig','Eingeschränkt wirksam','Diuretika-Resistenz ↑ bei sinkender GFR'],
-  ['Amiodaron','Kardiovaskulär','Normal','Normal','Normal','Normal','Normal','Keine renale Elimination'],
-  ['Statine (allg.)','Kardiovaskulär','Normal','Normal','Normal','Vorsicht (Dosis ↓)','Vorsicht','Myopathie-Risiko ↑ bei CKD; Rosuvastatin max 10mg bei <30'],
-  // ANTIKOAGULATION
-  ['cat','Antikoagulation','','','','','',''],
-  ['Dabigatran','Antikoagulation','Normal (150mg 2×)','Normal','Vorsicht (110mg 2×)','KI','KI','Hauptsächlich renal eliminiert; Blutungsrisiko ↑'],
-  ['Rivaroxaban','Antikoagulation','Normal (20mg/d)','Normal','15 mg/d','KI','KI','Cave: Fachinformation genau prüfen'],
-  ['Apixaban','Antikoagulation','Normal (5mg 2×)','Normal','2,5 mg 2× (wenn 2/3 Krit.)','2,5 mg 2×','KI (relativ)','Weniger renal elim.; relativ sicherster DOAK'],
-  ['Edoxaban','Antikoagulation','60 mg/d','30 mg/d','30 mg/d','KI','KI','Reduktion ab eGFR <50'],
-  ['Enoxaparin (NMH)','Antikoagulation','Normal','Normal','Dosis ↓ 50% oder 1×/d','Anti-Xa-Monitoring','UFH bevorzugen','Anti-Xa-Spiegel messen; ggf. UFH wechseln'],
-  ['Phenprocoumon','Antikoagulation','Normal','Normal','Normal, INR-Monitor','Vorsicht','Vorsicht','Blutungsrisiko ↑; renale Anpassung INR-gesteuert'],
-  // ANALGETIKA
-  ['cat','Analgetika','','','','','',''],
-  ['Ibuprofen / NSAR','Analgetika','Kurzfristig möglich','Vermeiden','KI','KI','KI','Vasokonstriktion; akutes Nierenversagen; GI-Blutung'],
-  ['Paracetamol','Analgetika','Normal (max 4g/d)','Normal','Normal','Max 2g/d, q6h','Max 2g/d','Sicherste Analgesie bei CKD'],
-  ['Tramadol','Analgetika','Normal','Max 200mg/d','Max 100mg/d, q12h','KI','KI','Aktive Metaboliten; Krampfrisiko'],
-  ['Morphin','Analgetika','Normal','Dosis ↓, q6–8h','Dosis ↓↓, q12h','Vorsicht/KI','KI','M6G akkumuliert; Opioid-Neurotoxizität'],
-  ['Oxycodon','Analgetika','Normal','Dosis ↓ 25%','Dosis ↓ 50%','Vorsicht','KI','Weniger renale Metaboliten als Morphin'],
-  ['Pregabalin','Analgetika','Normal (max 600mg)','150–300 mg/d','75–150 mg/d','25–75 mg/d','25 mg/d oder q24h','Neuropathischer Schmerz; Sedierungsrisiko ↑'],
-  ['Gabapentin','Analgetika','Normal (max 3600mg)','700–1400 mg/d','200–700 mg/d','200–700 mg q24h','100–300 mg q24h','TDM sinnvoll; ZNS-Toxizität bei CKD'],
-  // ANTIBIOTIKA
-  ['cat','Antibiotika','','','','','',''],
-  ['Amoxicillin','Antibiotika','Normal','Normal','500 mg q12h','500 mg q24h','250–500 mg q24h','Auch bei HD standard dosieren post-Dialyse'],
-  ['Amox/Clavulansäure','Antibiotika','Normal','Normal','875/125 mg q12h','500/125 mg q24h','250/125 mg q24h','Clavulansäure akkumuliert'],
-  ['Piperacillin/Tazob.','Antibiotika','Normal (4,5g q6h)','Normal','4,5g q8h','4,5g q12h','2,25g q12h','TDM bei Intensivpatienten'],
-  ['Meropenem','Antibiotika','1g q8h','1g q8h','1g q12h','0,5g q12h','0,5g q24h','Bei Sepsis ggf. höhere Dosen + TDM'],
-  ['Ciprofloxacin','Antibiotika','Normal (500mg q12h)','250–500mg q12h','250–500mg q12h','250–500mg q24h','250–500mg q24h','ZNS-Toxizität ↑; Cave Fluorchinolon-Risiken'],
-  ['Cotrimoxazol','Antibiotika','Normal','Normal','50% Dosis','Vorsicht, 50%','KI (außer PCP-Prophylaxe)','PCP-Prophylaxe: Cotrimoxazol 480mg/d bis GFR 15'],
-  ['Vancomycin','Antibiotika','TDM-gesteuert','TDM, Intervall ↑','TDM, Intervall ↑↑','TDM, q72–96h','Post-HD Dosierung','AUC-gesteuertes TDM; Ziel AUC 400–600'],
-  ['Aciclovir','Antibiotika','Normal (5mg/kg q8h)','Normal','5mg/kg q24h','2,5mg/kg q24h','2,5mg/kg post-HD','Kristallurie; Hydrierung wichtig'],
-  ['Valaciclovir','Antibiotika','1g q8h (Herpes)','1g q12h','1g q24h','500mg q24h','500mg post-HD','Prodrug von Aciclovir'],
-  // IMMUNSUPPRESSIVA / RHEUMA
-  ['cat','Immunsuppressiva / Rheuma','','','','','',''],
-  ['Methotrexat','Immunsuppressiva / Rheuma','Normal (Rheuma)','75% Dosis','50% Dosis','KI','KI','Mukositis/Panzytopenie-Risiko; Leukovorin bereithalten'],
-  ['Colchicin','Immunsuppressiva / Rheuma','Normal','Normal','0,5 mg/d max','0,5 mg jeden 2. Tag','KI','Neuromuskuläre Toxizität; Gicht-Attacke max 0,5mg/Dosis'],
-  ['Hydroxychloroquin','Immunsuppressiva / Rheuma','Normal','Normal','Normal','Normal (Vorsicht)','Vorsicht','Keine relevante renale Elim.'],
-  ['Mycophenolat','Immunsuppressiva / Rheuma','Normal','Normal','Normal','Vorsicht, GI↑','Vorsicht','GI-Toxizität ↑; Spiegel-Monitoring'],
-  ['Tacrolimus','Immunsuppressiva / Rheuma','TDM','TDM','TDM','TDM','TDM','Keine Dosisanpassung nach eGFR — TDM-gesteuert'],
-  ['Cyclosporin','Immunsuppressiva / Rheuma','TDM','TDM','TDM','TDM','TDM','Nephrotoxisch! Spiegel + Krea engmaschig'],
-  // DIVERSES
-  ['cat','Diverses','','','','','',''],
-  ['Allopurinol','Diverses','Normal (300mg/d)','200 mg/d','100–200 mg/d','100 mg/d','100 mg q48h','Hypersensitivitätssyndrom; HLA-B*58:01 testen'],
-  ['Febuxostat','Diverses','Normal (80–120mg)','Normal','Normal','Normal (Vorsicht)','Vorsicht','Besser als Allopurinol bei CKD (keine renale Elim.)'],
-  ['Bisphosphonate','Diverses','Normal (>60)','Normal (50–59)','Vorsicht, ggf. KI','KI','KI','Zoledronat KI <35; Denosumab sicherer bei CKD'],
-  ['Lithium','Diverses','Normal (TDM)','Dosis ↓, TDM','Dosis ↓↓, TDM','Vorsicht/KI','KI','Schmalste therapeutische Breite; TDM obligat'],
-];
-
-let currentEGFR = null;
 let _lastGFRStage = null, _lastAlbStage = null, _lastRiskInfo = null;
-
-function buildDrugTable() {
-  const tbody = document.getElementById('drug-tbody');
-  let html = '';
-  DRUGS.forEach(d => {
-    if (d[0] === 'cat') {
-      html += `<tr class="cat-row"><td colspan="7">${d[1]}</td></tr>`;
-      return;
-    }
-    // Highlight column based on current eGFR
-    let highlight = ['','','','',''];
-    if (currentEGFR !== null) {
-      let col = currentEGFR >= 60 ? 0 : currentEGFR >= 45 ? 1 : currentEGFR >= 30 ? 2 : currentEGFR >= 15 ? 3 : 4;
-      highlight[col] = ' class="egfr-highlight"';
-    }
-    // Color coding
-    function doseClass(txt) {
-      if (!txt) return '';
-      let t = txt.toLowerCase();
-      if (t === 'ki' || t.startsWith('ki')) return 'dose-ci';
-      if (t.includes('vorsicht') || t.includes('↓') || t.includes('monitor') || t.includes('tdm')) return 'dose-reduce';
-      return 'dose-ok';
-    }
-    html += `<tr data-name="${d[0].toLowerCase()} ${d[1].toLowerCase()}">
-      <td><strong>${d[0]}</strong></td>
-      <td${highlight[0]}><span class="${doseClass(d[2])}">${d[2]}</span></td>
-      <td${highlight[1]}><span class="${doseClass(d[3])}">${d[3]}</span></td>
-      <td${highlight[2]}><span class="${doseClass(d[4])}">${d[4]}</span></td>
-      <td${highlight[3]}><span class="${doseClass(d[5])}">${d[5]}</span></td>
-      <td${highlight[4]}><span class="${doseClass(d[6])}">${d[6]}</span></td>
-      <td style="font-size:0.7rem;color:#607d8b;">${d[7]}</td>
-    </tr>`;
-  });
-  tbody.innerHTML = html;
-}
-
-function filterDrugs() {
-  const q = document.getElementById('drug-search').value.toLowerCase();
-  document.querySelectorAll('#drug-tbody tr').forEach(row => {
-    if (row.classList.contains('cat-row')) {
-      row.classList.toggle('hidden', q.length > 0);
-      return;
-    }
-    const name = row.getAttribute('data-name') || '';
-    row.classList.toggle('hidden', q.length > 0 && !name.includes(q));
-  });
-}
 
 // ===== ASCII RISK MATRIX (for text export) =====
 function buildAsciiMatrix(gfrStage, albStage, riskInfo) {
@@ -2302,17 +2413,8 @@ function generateCKDMBDPanel({ weight, dialysisSt, hb, ferritin, tsat, pth, bica
   panel.innerHTML = `<div class="mbd-grid">${cards}</div>`;
 }
 
-// ===== UPDATE EGFR DISPLAY IN DRUG TABLE =====
-function updateDrugEGFR(egfr) {
-  currentEGFR = egfr;
-  const disp = document.getElementById('current-egfr-display');
-  if (disp) disp.textContent = egfr !== null ? `${egfr} ml/min` : '— ml/min';
-  buildDrugTable();
-}
-
 // Initial matrix render
 buildMatrix(-1, -1);
-buildDrugTable();
 </script>
 </body>
 </html>
